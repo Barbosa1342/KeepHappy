@@ -12,10 +12,11 @@ public class attackMovement : MonoBehaviour
     float camHeight;
     float camWidth;
 
-    public bool top;
+    bool top;
     void OnEnable()
     {
         yInicial = transform.position.y;
+        top = spawner.isTop;
     }
 
     private void Start()
@@ -31,6 +32,13 @@ public class attackMovement : MonoBehaviour
         float posX = transform.position.x;
         float posY = transform.position.y;
 
+
+        MovementAttack1(posX);
+        DesactiveInstance(posX , posY);
+    }
+
+    void MovementAttack1(float posX)
+    {
         float x = posX + (-speed * Time.deltaTime);
         float y;
 
@@ -44,10 +52,16 @@ public class attackMovement : MonoBehaviour
         }
 
         transform.position = new Vector2(x, y);
-
-        if (posX > (camWidth + 10) || posX < (-camWidth - 10) || posY < (-camHeight-10) || posY > (camHeight+10))
+    }
+    void DesactiveInstance(float posX, float posY)
+    {
+        if (posX > (camWidth + 10) ||
+            posX < (-camWidth - 10) ||
+            posY < (-camHeight - 10) ||
+            posY > (camHeight + 10))
         {
             gameObject.SetActive(false);
         }
     }
+
 }
