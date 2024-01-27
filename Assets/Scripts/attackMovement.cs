@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class attackMovement : MonoBehaviour
+public class AttackMovement : MonoBehaviour
 {
     float yInicial;
     public float mult = 1;
@@ -15,16 +15,17 @@ public class attackMovement : MonoBehaviour
     public int attackType;
     // 0 = basic
     // 1 = one
+    // 2 = two
 
     public bool top;
     Vector2 step;
+    public Vector2 dir;
 
-    GameObject player;
     void OnEnable()
     {
         yInicial = transform.position.y;
 
-        if (attackType == 0)
+        if (attackType == 0 || attackType == 2)
         {
             SetStep();
         }
@@ -39,39 +40,28 @@ public class attackMovement : MonoBehaviour
 
     void Update()
     {
-        if (player != null)
+        if (attackType == 0 || attackType == 2)
         {
-            if (attackType == 0)
-            {
-                MovementAttack();
-            }
-            else
-            {
-                MovementAttackOne();
-            }
-
-            DesactiveInstance();
+            MovementAttack();
         }
+        else
+        {
+            MovementAttackOne();
+        }
+
+        DesactiveInstance();
     }
 
     void MovementAttack()
     {
-        Vector2 newPos = new Vector2(transform.position.x + step.x, transform.position.y + step.y);
+        Vector2 newPos = new(transform.position.x + step.x, transform.position.y + step.y);
         
         transform.position = newPos;
     }
 
     void SetStep()
     {
-        player = GameObject.FindWithTag("Player");
-        if (player != null)
-        {
-            Vector2 actualPos = new Vector2(transform.position.x, transform.position.y);
-            Vector2 playerPos = new Vector2(player.transform.position.x, player.transform.position.y);
-            Vector2 dir = new Vector2(playerPos.x - actualPos.x, playerPos.y - actualPos.y).normalized;
-
-            step = speed * dir * Time.deltaTime;
-        }
+        step = speed * Time.deltaTime * dir;
     }
 
     void MovementAttackOne()
@@ -90,6 +80,7 @@ public class attackMovement : MonoBehaviour
 
         transform.position = new Vector2(x, y);
     }
+
     void DesactiveInstance()
     {
         float posX = transform.position.x;
@@ -106,7 +97,7 @@ public class attackMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Player" && attackType == 0)
+        if (collision.collider.CompareTag("Player") && (attackType == 0 || attackType == 2))
         {
             gameObject.SetActive(false);
         }

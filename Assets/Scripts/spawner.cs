@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-public class spawner : MonoBehaviour
+public class Spawner : MonoBehaviour
 {
     [SerializeField] GameObject objectToPool;
     [SerializeField] int amountToPool;
 
-    List<GameObject> pooledObjects = new List<GameObject>();
+    List<GameObject> pooledObjects = new();
     float camHeight;
     float camWidth;
+
+    [SerializeField] GameObject player;
     void Start()
     {
-        pooledObjects = objectPool.SetPool(objectToPool, amountToPool);
+        pooledObjects = ObjectPool.SetPool(objectToPool, amountToPool);
 
         var cam = Camera.main;
         camHeight = cam.orthographicSize;
@@ -24,36 +26,47 @@ public class spawner : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown("f"))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(AttackOne());
         }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            StartCoroutine(AttackTwo());
+        }
     }
 
-    GameObject SpawnObject(Vector2 position, int attackType)
+    GameObject SpawnObject(Vector2 position, int attackType, Vector2 dir)
     {
-        GameObject objectToSpawn = objectPool.GetPooledObject(pooledObjects);
+        GameObject objectToSpawn = ObjectPool.GetPooledObject(pooledObjects);
 
         if (objectToSpawn != null)
         {
-            objectToSpawn.transform.position = position;
-            objectToSpawn.transform.rotation = Quaternion.identity;
-            objectToSpawn.GetComponent<attackMovement>().attackType = attackType;
+            objectToSpawn.transform.SetPositionAndRotation(position, Quaternion.identity);
+
+            AttackMovement attackScript = objectToSpawn.GetComponent<AttackMovement>();
+            attackScript.dir = dir;
+            attackScript.attackType = attackType;
+
             objectToSpawn.SetActive(true);
         }
 
         return objectToSpawn;
     }
-    GameObject SpawnObject(Vector2 position, bool isTop, int attackType = 1)
+
+    GameObject SpawnObject(Vector2 position, int attackType = 1, bool isTop = true)
     {
-        GameObject objectToSpawn = objectPool.GetPooledObject(pooledObjects);
+        GameObject objectToSpawn = ObjectPool.GetPooledObject(pooledObjects);
 
         if (objectToSpawn != null)
         {
-            objectToSpawn.transform.position = position;
-            objectToSpawn.transform.rotation = Quaternion.identity;
-            objectToSpawn.GetComponent<attackMovement>().attackType = attackType;
-            objectToSpawn.GetComponent<attackMovement>().top = isTop;
+            objectToSpawn.transform.SetPositionAndRotation(position, Quaternion.identity);
+
+            AttackMovement attackScript = objectToSpawn.GetComponent<AttackMovement>();
+            attackScript.top = isTop;
+            attackScript.attackType = attackType;
+
             objectToSpawn.SetActive(true);
         }
 
@@ -95,9 +108,12 @@ public class spawner : MonoBehaviour
                 x = Random.Range(-camWidth - 5, -camWidth);
                 y = Random.Range(-camHeight, camHeight);
             }
-            Vector2 pos = new Vector2(x, y);
+            Vector2 pos = new (x, y);
 
-            SpawnObject(pos, 0);
+            Vector2 playerPos = new (player.transform.position.x, player.transform.position.y);
+            Vector2 dir = new Vector2(playerPos.x - pos.x, playerPos.y - pos.y).normalized;
+
+            _ = SpawnObject(pos, 0, dir);
 
             float waitTime = Random.Range(1.5f, 2.5f);
             yield return new WaitForSeconds(waitTime);
@@ -123,7 +139,7 @@ public class spawner : MonoBehaviour
 
         for (int numEnemy = 0; numEnemy < 20; numEnemy++)
         {
-            GameObject lastObjectSpawned = SpawnObject(pos, isTop, 1);
+            GameObject lastObjectSpawned = SpawnObject(pos, 1, isTop);
 
             BoxCollider2D box = lastObjectSpawned.GetComponent<BoxCollider2D>();
             float dis = camWidth - lastObjectSpawned.transform.position.x;
@@ -136,5 +152,74 @@ public class spawner : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    IEnumerator AttackTwo()
+    {
+        int choice = Random.Range(1, 5); // 1 to 4
+
+        float x, y;
+        Vector2 spawnPos;
+
+        if (choice == 1)
+        {
+            // Top
+            x = 0;
+            y = camHeight;
+        }
+        else if (choice == 2)
+        {
+            // Bottom
+            x = 0;
+            y = -camHeight;
+        }
+        else if (choice == 3)
+        {
+            // Right
+            x = camWidth;
+            y = 0;
+        }
+        else
+        {
+            // Left
+            x = -camWidth;
+            y = 0;
+        }
+        spawnPos = new Vector2(x, y);
+        
+
+        for (int i = 0; i <= 10; i++)
+        {
+            float a = Random.Range(-1f, 1f);
+            float b = Random.Range(0f, 1f);
+            Vector2 moveDir;
+
+            if (choice == 1)
+            {
+                // Top
+                moveDir = new Vector2(a, -b);
+            }
+            else if (choice == 2)
+            {
+                // Bottom
+                moveDir = new Vector2(a, b);
+            }
+            else if (choice == 3)
+            {
+                // Right
+                moveDir = new Vector2(-b, a);
+            }
+            else
+            {
+                // Left
+                moveDir = new Vector2(b, a);
+            }
+            moveDir = moveDir.normalized;
+
+            _ = SpawnObject(spawnPos, 2, moveDir);
+
+            yield return null;
+        }
+        
     }
 }
