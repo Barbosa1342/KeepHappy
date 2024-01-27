@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -8276896488264992262}
   m_Layer: 0
   m_Name: throwItem
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +100,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mult: 2
   speed: 2
+  attackType: 0
+  top: 0
+  dir: {x: 0, y: 0}
 --- !u!61 &-8276896488264992262
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -129,7 +132,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

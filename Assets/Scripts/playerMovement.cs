@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] float speed = 5;
     float dirX, dirY;
-    float diagonalLimit = 0.7f;
+    readonly float diagonalLimit = 0.7f;
     void Awake()
     {
         rig = gameObject.GetComponent<Rigidbody2D>();
@@ -19,7 +19,6 @@ public class PlayerMovement : MonoBehaviour
         dirX = Input.GetAxisRaw("Horizontal");
         dirY = Input.GetAxisRaw("Vertical");
     }
-
     void FixedUpdate()
     {
         if (dirX != 0 && dirY != 0)
@@ -29,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector2 newVelocity = new Vector2(dirX, dirY) * speed;
-        //rig.velocity = newVelocity;
         rig.velocity = Vector2.Lerp(rig.velocity, newVelocity, 0.75f);
     }
 }
