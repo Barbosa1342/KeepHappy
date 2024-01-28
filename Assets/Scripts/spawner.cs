@@ -69,6 +69,7 @@ public class Spawner : MonoBehaviour
     IEnumerator Attack()
     {
         float dificulty = 0.001f;
+        yield return new WaitForSeconds(1f);
         while (true)
         {
             // There are 4 blocks to spawn the attack

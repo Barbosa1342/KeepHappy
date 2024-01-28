@@ -54,6 +54,7 @@ public class SceneController : MonoBehaviour
 
     public void GameOverScreen()
     {
+        SoundController.soundController.GameOverSound();
         spawner.StopAllCoroutines();
         gameHUD.SetActive(false);
 
@@ -67,14 +68,12 @@ public class SceneController : MonoBehaviour
         {
             "What do you mean: I don't pay my bills?",
             "I said don't call the ambulance. They did call.",
-            "And still some year to pay back.",
             "Sometimes I think if a pigeon's life would be easier...",
             "I should quit the 3$ coffee.",
             "If you require rest, now is not the time.",
             "F",
             "First time?",
             "I think, so I quit.",
-            "Why are you still here????",
             "An hour ago I started to question my sanity."
         };
 
@@ -99,9 +98,12 @@ public class SceneController : MonoBehaviour
 
     IEnumerator WinScreen()
     {
-        yield return new WaitForSeconds(20f);
+        yield return new WaitForSeconds(200f);
 
-        SceneManager.LoadScene(2);
+        if (gameOverScreen.activeSelf == false)
+        {
+            SceneManager.LoadScene(2);
+        }
     }
 
 }

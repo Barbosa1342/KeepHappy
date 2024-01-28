@@ -17,6 +17,11 @@ public class HealthSystem : MonoBehaviour
 
     public void ChangeHealth(float amount)
     {
+        if (amount < 0)
+        {
+            SoundController.soundController.DamageSound();
+        }
+
         currentHealth += amount;
 
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);

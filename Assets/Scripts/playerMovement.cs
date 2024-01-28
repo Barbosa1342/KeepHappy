@@ -16,11 +16,16 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        dirX = Input.GetAxisRaw("Horizontal");
-        dirY = Input.GetAxisRaw("Vertical");
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = transform.position.z;
+
+        transform.position = mousePosition;
+        //dirX = Input.GetAxisRaw("Horizontal");
+        //dirY = Input.GetAxisRaw("Vertical");
     }
     void FixedUpdate()
     {
+        /*
         if (dirX > 0)
         {
             transform.localScale = new Vector3(1,1,1);
@@ -37,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector2 newVelocity = new Vector2(dirX, dirY) * speed;
-        rig.velocity = Vector2.Lerp(rig.velocity, newVelocity, 0.75f);
+        rig.velocity = Vector2.Lerp(rig.velocity, newVelocity, 0.75f);*/
+
+        
     }
 }
