@@ -20,9 +20,11 @@ public class HealthSystem : MonoBehaviour
         currentHealth += amount;
 
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        SceneController.sceneControllerObj.UpdateHeart();
 
         if (currentHealth <= 0)
         {
+            SceneController.sceneControllerObj.GameOverScreen();
             gameObject.SetActive(false);
         }
     

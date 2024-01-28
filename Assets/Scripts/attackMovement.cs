@@ -86,10 +86,10 @@ public class AttackMovement : MonoBehaviour
         float posX = transform.position.x;
         float posY = transform.position.y;
 
-        if (posX > (camWidth + 10) ||
-            posX < (-camWidth - 10) ||
-            posY < (-camHeight - 10) ||
-            posY > (camHeight + 10))
+        if (posX > (camWidth + 5) ||
+            posX < (-camWidth - 5) ||
+            posY < (-camHeight - 5) ||
+            posY > (camHeight + 5))
         {
             gameObject.SetActive(false);
         }

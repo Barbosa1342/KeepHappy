@@ -21,6 +21,15 @@ public class PlayerMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (dirX > 0)
+        {
+            transform.localScale = new Vector3(1,1,1);
+        }
+        else if (dirX < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+
         if (dirX != 0 && dirY != 0)
         {
             dirX *= diagonalLimit;

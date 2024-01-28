@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class Spawner : MonoBehaviour
 {
@@ -13,6 +12,8 @@ public class Spawner : MonoBehaviour
     float camWidth;
 
     [SerializeField] GameObject player;
+    [SerializeField] Sprite[] spriteList;
+
     void Start()
     {
         pooledObjects = ObjectPool.SetPool(objectToPool, amountToPool);
@@ -22,19 +23,7 @@ public class Spawner : MonoBehaviour
         camWidth = cam.orthographicSize * cam.aspect;
 
         StartCoroutine(Attack());
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            StartCoroutine(AttackOne());
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            StartCoroutine(AttackTwo());
-        }
+        StartCoroutine(ControlTime());
     }
 
     GameObject SpawnObject(Vector2 position, int attackType, Vector2 dir)
@@ -43,6 +32,8 @@ public class Spawner : MonoBehaviour
 
         if (objectToSpawn != null)
         {
+            objectToSpawn.GetComponent<SpriteRenderer>().sprite = RandomSprite();
+
             objectToSpawn.transform.SetPositionAndRotation(position, Quaternion.identity);
 
             AttackMovement attackScript = objectToSpawn.GetComponent<AttackMovement>();
@@ -61,6 +52,8 @@ public class Spawner : MonoBehaviour
 
         if (objectToSpawn != null)
         {
+            objectToSpawn.GetComponent<SpriteRenderer>().sprite = spriteList[0];
+
             objectToSpawn.transform.SetPositionAndRotation(position, Quaternion.identity);
 
             AttackMovement attackScript = objectToSpawn.GetComponent<AttackMovement>();
@@ -75,6 +68,7 @@ public class Spawner : MonoBehaviour
 
     IEnumerator Attack()
     {
+        float dificulty = 0.001f;
         while (true)
         {
             // There are 4 blocks to spawn the attack
@@ -88,24 +82,24 @@ public class Spawner : MonoBehaviour
             {
                 // Top
                 x = Random.Range(-camWidth, camWidth);
-                y = Random.Range(camHeight, camHeight + 5);
+                y = Random.Range(camHeight, camHeight + 1);
             }
             else if (choice == 2)
             {
                 // Bottom
                 x = Random.Range(-camWidth, camWidth);
-                y = Random.Range(-camHeight - 5, -camHeight);
+                y = Random.Range(-camHeight - 1, -camHeight);
             }
             else if (choice == 3)
             {
                 // Right
-                x = Random.Range(camWidth, camWidth + 5);
+                x = Random.Range(camWidth, camWidth + 1);
                 y = Random.Range(-camHeight, camHeight);
             }
             else
             {
                 // Left
-                x = Random.Range(-camWidth - 5, -camWidth);
+                x = Random.Range(-camWidth - 1, -camWidth);
                 y = Random.Range(-camHeight, camHeight);
             }
             Vector2 pos = new (x, y);
@@ -116,17 +110,25 @@ public class Spawner : MonoBehaviour
             _ = SpawnObject(pos, 0, dir);
 
             float waitTime = Random.Range(1.5f, 2.5f);
+            waitTime -= dificulty;
+            
             yield return new WaitForSeconds(waitTime);
+
+            dificulty += 0.0075f;
         }
     }
 
-    IEnumerator AttackOne()
+    IEnumerator AttackOne(int choice = 0)
     {
-        int choice = Random.Range(0, 2); // 0 or 1
         bool isTop;
         Vector2 pos;
 
         if (choice == 0)
+        {
+            choice = Random.Range(1, 3);
+        }
+
+        if (choice == 1)
         {
             isTop = true;
             pos = new Vector2(camWidth, camHeight);
@@ -221,5 +223,54 @@ public class Spawner : MonoBehaviour
             yield return null;
         }
         
+    }
+
+    IEnumerator ControlTime()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            yield return new WaitForSeconds(20f);
+            StartCoroutine(AttackOne());
+        }
+
+        
+        for (int i = 0; i < 4; i++)
+        {
+            yield return new WaitForSeconds(10f);
+
+            int choose = Random.Range(0, 2);
+            for (int j = 0; j <= choose; j++)
+            {
+                StartCoroutine(AttackTwo());
+            }
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            yield return new WaitForSeconds(20f);
+            StartCoroutine(AttackOne(1));
+            StartCoroutine(AttackOne(2));
+        }
+
+        yield return new WaitForSeconds(20f);
+        for (int i = 0; i < 2; i++)
+        {
+            StartCoroutine(AttackOne());
+
+            for(int  j = 0; j < 4; j++)
+            {
+                StartCoroutine(AttackTwo());
+                yield return new WaitForSeconds(5f);
+            }
+        }
+    }
+
+    Sprite RandomSprite()
+    {
+        int listLength = spriteList.Length;
+
+        int chooseIndex = Random.Range(0, listLength);
+
+        return spriteList[chooseIndex];
     }
 }
